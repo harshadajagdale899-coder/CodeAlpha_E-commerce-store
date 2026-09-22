@@ -11,10 +11,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 const productRoutes = require("./routes/products");
-app.use("/api/products", productRoutes);
 const userRoutes = require("./routes/user");
-app.use("/api/users", userRoutes);
 const orderRoutes = require("./routes/orders");
+app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 
 mongoose

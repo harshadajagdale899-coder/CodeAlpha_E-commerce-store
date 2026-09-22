@@ -3,7 +3,6 @@ const Order = require("../models/Order");
 
 const router = express.Router();
 
-// Place order
 router.post("/", async (req, res) => {
   try {
     const order = await Order.create(req.body);
