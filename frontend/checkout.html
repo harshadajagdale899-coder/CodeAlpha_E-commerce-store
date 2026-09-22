@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Checkout</title>
+  </head>
+
+  <body>
+    <h1>Checkout</h1>
+
+    <button onclick="placeOrder()">Place Order</button>
+
+    <script>
+      async function placeOrder() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        const userId = localStorage.getItem("userId");
+
+        if (cart.length === 0) {
+          alert("Cart is empty");
+          return;
+        }
+
+        if (!userId) {
+          alert("Please login first");
+          return;
+        }
+
+        const products = cart.map((id) => ({
+          productId: id,
+          quantity: 1,
+        }));
+
+        const response = await fetch("http://localhost:3000/api/orders", {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            userId: userId,
+            products: products,
+            totalAmount: 0,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.removeItem("cart");
+
+          alert("Order placed successfully!");
+
+          window.location.href = "index.html";
+        } else {
+          alert(data.message || "Order failed");
+        }
+      }
+    </script>
+  </body>
+</html>

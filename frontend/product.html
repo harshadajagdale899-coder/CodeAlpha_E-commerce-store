@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div id="product"></div>
+
+    <script>
+      async function loadProduct() {
+        const id = new URLSearchParams(window.location.search).get("id");
+
+        const response = await fetch("http://localhost:3000/api/products");
+
+        const products = await response.json();
+
+        const product = products.find((p) => p._id === id);
+
+        if (!product) {
+          document.getElementById("product").innerHTML =
+            "<h2>Product not found</h2>";
+          return;
+        }
+
+        document.getElementById("product").innerHTML = `
+        
+        <div class="product">
+
+          <img src="${product.image}" alt="${product.name}">
+
+          <h2>${product.name}</h2>
+
+          <p>${product.description}</p>
+
+          <h3>₹${product.price}</h3>
+
+          <button onclick="addToCart('${product._id}')">
+            Add to Cart
+          </button>
+
+        </div>
+
+      `;
+      }
+
+      function addToCart(id) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        if (!cart.includes(id)) {
+          cart.push(id);
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        alert("Product added to cart!");
+      }
+
+      loadProduct();
+    </script>
+  </body>
+</html>

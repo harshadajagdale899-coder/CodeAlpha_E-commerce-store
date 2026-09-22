@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <h1>Shopping Cart</h1>
+
+    <div id="cart"></div>
+
+    <script>
+      async function loadCart() {
+        const cartIds = JSON.parse(localStorage.getItem("cart")) || [];
+
+        const container = document.getElementById("cart");
+
+        if (cartIds.length === 0) {
+          container.innerHTML = "<h2>Your cart is empty</h2>";
+          return;
+        }
+
+        const response = await fetch("http://localhost:3000/api/products");
+
+        const products = await response.json();
+
+        const cartProducts = products.filter((product) =>
+          cartIds.includes(product._id),
+        );
+
+        if (cartProducts.length === 0) {
+          container.innerHTML = "<h2>Your cart is empty</h2>";
+          return;
+        }
+
+        container.innerHTML = "";
+
+        cartProducts.forEach((product) => {
+          container.innerHTML += `
+          <div class="product">
+
+            <img
+              src="${product.image}"
+              alt="${product.name}"
+            >
+
+            <h2>${product.name}</h2>
+
+            <p>${product.description}</p>
+
+            <h3>₹${product.price}</h3>
+
+            <button onclick="removeFromCart('${product._id}')">
+              Remove
+            </button>
+
+          </div>
+        `;
+        });
+
+        container.innerHTML += `
+        <br>
+        <button onclick="checkout()">
+          Checkout
+        </button>
+      `;
+      }
+
+      function removeFromCart(id) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        cart = cart.filter((productId) => productId !== id);
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        loadCart();
+      }
+
+      function checkout() {
+        window.location.href = "checkout.html";
+      }
+
+      loadCart();
+    </script>
+  </body>
+</html>
